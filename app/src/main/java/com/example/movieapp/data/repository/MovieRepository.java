@@ -1,6 +1,7 @@
 package com.example.movieapp.data.repository;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.movieapp.BuildConfig;
 import com.example.movieapp.data.api.ApiClient;
@@ -53,8 +54,11 @@ public class MovieRepository {
      * Get popular movies
      */
     public void getPopularMovies(int page, MovieCallback callback) {
-        if (apiKey == null || apiKey.isEmpty()) {
-            callback.onError("API key is missing. Please configure TMDB_API_KEY in local.properties");
+        Log.d("API_KEY_CHECK", "Using API key: " + apiKey);
+
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            Log.e("API_KEY_CHECK", "API KEY IS EMPTY!!!");
+            callback.onError("API key is missing");
             return;
         }
         

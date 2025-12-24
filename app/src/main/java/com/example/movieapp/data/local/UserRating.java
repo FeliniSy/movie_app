@@ -27,10 +27,7 @@ public class UserRating {
     private int movieId;
     private float rating; // 1.0 to 5.0 stars
     private long timestamp; // When the rating was created/updated
-    
-    public UserRating() {
-    }
-    
+
     public UserRating(int userId, int movieId, float rating) {
         this.userId = userId;
         this.movieId = movieId;

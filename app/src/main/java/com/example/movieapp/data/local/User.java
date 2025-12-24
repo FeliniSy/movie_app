@@ -15,9 +15,7 @@ public class User {
     private String name;
     private String email;
     private String passwordHash; // Hashed password, never store plain text
-    
-    public User() {
-    }
+
     
     public User(String name, String email, String passwordHash) {
         this.name = name;

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,26 +17,18 @@ import com.example.movieapp.utils.SharedPrefsHelper;
  * Shows splash screen and navigates to appropriate screen based on login status
  */
 public class SplashActivity extends AppCompatActivity {
-    private static final int SPLASH_DELAY = 2000; // 2 seconds
-    
+    private static final int SPLASH_DELAY = 1500; // 2 seconds
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        
-        // Navigate after delay
+
+        Log.d("SplashDebug", "Splash started");
+
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            SharedPrefsHelper sharedPrefsHelper = SharedPrefsHelper.getInstance(this);
-            
-            Intent intent;
-            if (sharedPrefsHelper.isLoggedIn()) {
-                // User is logged in, go to MainActivity
-                intent = new Intent(SplashActivity.this, MainActivity.class);
-            } else {
-                // User is not logged in, go to LoginActivity
-                intent = new Intent(SplashActivity.this, LoginActivity.class);
-            }
-            
+            Log.d("SplashDebug", "Going to Login");
+            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         }, SPLASH_DELAY);
