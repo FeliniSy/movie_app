@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">Movie App</string>
+    
+    <!-- Auth -->
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="name">Name</string>
+    <string name="login_title">Welcome Back</string>
+    <string name="register_title">Create Account</string>
+    <string name="already_have_account">Already have an account? Login</string>
+    <string name="dont_have_account">Don\'t have an account? Register</string>
+    <string name="logout">Logout</string>
+    
+    <!-- Home -->
+    <string name="popular_movies">Popular Movies</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="home">Home</string>
+    <string name="genres">Genres</string>
+    <string name="search">Search</string>
+    <string name="profile">Profile</string>
+    
+    <!-- Movie Details -->
+    <string name="release_date">Release Date</string>
+    <string name="rating">Rating</string>
+    <string name="overview">Overview</string>
+    <string name="genre">Genre</string>
+    <string name="runtime">Runtime</string>
+    <string name="language">Language</string>
+    <string name="your_rating">Your Rating</string>
+    <string name="rate_movie">Rate this movie</string>
+    
+    <!-- Profile -->
+    <string name="user_profile">User Profile</string>
+    <string name="rated_movies">Rated Movies</string>
+    
+    <!-- Common -->
+    <string name="loading">Loading…</string>
+    <string name="error">Error</string>
+    <string name="retry">Retry</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="search_hint">Search movies…</string>
+    <string name="no_results">No results found</string>
+    <string name="movie_poster">Movie Poster</string>
+</resources>
