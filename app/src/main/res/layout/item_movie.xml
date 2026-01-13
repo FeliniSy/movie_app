@@ -1,71 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
+    android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/imageViewPoster"
-            android:layout_width="0dp"
-            android:layout_height="250dp"
+            android:id="@+id/posterImageView"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
             android:scaleType="centerCrop"
-            android:contentDescription="@string/movie_poster"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:contentDescription="Movie poster" />
 
-        <TextView
-            android:id="@+id/textViewTitle"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Movie Title"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:maxLines="2"
-            android:ellipsize="end"
+            android:orientation="horizontal"
             android:padding="8dp"
-            android:textColor="?attr/colorOnSurface"
-            app:layout_constraintTop_toBottomOf="@+id/imageViewPoster"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/textViewRating"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Movie Title"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/ratingTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0"
+                android:textSize="12sp"
+                android:padding="4dp"
+                android:background="@android:color/holo_orange_light" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="⭐ 0.0"
-            android:textSize="12sp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:textColor="?attr/colorOnSurface"
-            app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:gravity="center">
 
-        <TextView
-            android:id="@+id/textViewReleaseDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2024"
-            android:textSize="12sp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            app:layout_constraintTop_toBottomOf="@+id/textViewTitle"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <ImageButton
+                android:id="@+id/likeImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/btn_star_big_off"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Like" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageButton
+                android:id="@+id/favoriteImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/btn_star_big_on"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Favorite" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </androidx.cardview.widget.CardView>
-
