@@ -11,8 +11,6 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.api.TMDBApiService;
 import com.example.myapplication.database.MovieDatabase;
-import com.example.myapplication.database.entity.Favorite;
-import com.example.myapplication.database.entity.Like;
 import com.example.myapplication.database.entity.Movie;
 import com.example.myapplication.util.SharedPreferencesHelper;
 
