@@ -15,12 +15,15 @@ import com.example.myapplication.R;
 import com.example.myapplication.api.TMDBApiService;
 import com.example.myapplication.database.entity.Movie;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
     private List<Movie> movies;
     private OnMovieClickListener listener;
     private int currentUserId;
+    private Set<Integer> favoriteIds = new HashSet<>();
 
     public interface OnMovieClickListener {
         void onMovieClick(Movie movie);
@@ -58,6 +61,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         notifyDataSetChanged();
     }
 
+    public void updateFavoriteIds(Set<Integer> newFavoriteIds) {
+        favoriteIds = newFavoriteIds != null ? newFavoriteIds : new HashSet<>();
+        notifyDataSetChanged();
+    }
+
+    public void toggleFavoriteId(int movieId) {
+        if (favoriteIds.contains(movieId)) {
+            favoriteIds.remove(movieId);
+        } else {
+            favoriteIds.add(movieId);
+        }
+        notifyDataSetChanged();
+    }
+
     class MovieViewHolder extends RecyclerView.ViewHolder {
         private ImageView posterImageView;
         private TextView titleTextView;
@@ -77,6 +94,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         public void bind(Movie movie) {
             titleTextView.setText(movie.getTitle());
             ratingTextView.setText(String.format("%.1f", movie.getVoteAverage()));
+            boolean isFavorite = favoriteIds.contains(movie.getId());
+            favoriteImageView.setImageResource(
+                isFavorite
+                    ? android.R.drawable.btn_star_big_on
+                    : android.R.drawable.btn_star_big_off
+            );
 
             if (movie.getPosterPath() != null && !movie.getPosterPath().isEmpty()) {
                 String imageUrl = TMDBApiService.IMAGE_BASE_URL + movie.getPosterPath();
@@ -100,7 +123,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
             favoriteImageView.setOnClickListener(v -> {
                 if (listener != null) {
-                    listener.onFavoriteClick(movie, false);
+                    listener.onFavoriteClick(movie, isFavorite);
+                    toggleFavoriteId(movie.getId());
                 }
             });
         }

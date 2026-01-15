@@ -16,7 +16,9 @@ import com.example.myapplication.database.entity.Like;
 import com.example.myapplication.database.entity.Movie;
 import com.example.myapplication.util.SharedPreferencesHelper;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class FavoritesActivity extends AppCompatActivity {
     private RecyclerView favoritesRecyclerView;
@@ -55,7 +57,7 @@ public class FavoritesActivity extends AppCompatActivity {
             }
         }, currentUserId);
 
-        favoritesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        favoritesRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         favoritesRecyclerView.setAdapter(movieAdapter);
 
         loadFavorites();
@@ -64,6 +66,11 @@ public class FavoritesActivity extends AppCompatActivity {
     private void loadFavorites() {
         List<Movie> favoriteMovies = database.favoriteDao().getFavoriteMovies(currentUserId);
         movieAdapter.updateMovies(favoriteMovies);
+        Set<Integer> favoriteIds = new HashSet<>();
+        for (Movie favoriteMovie : favoriteMovies) {
+            favoriteIds.add(favoriteMovie.getId());
+        }
+        movieAdapter.updateFavoriteIds(favoriteIds);
     }
 
     private void toggleLike(Movie movie) {
@@ -85,6 +92,8 @@ public class FavoritesActivity extends AppCompatActivity {
             Toast.makeText(this, "Removed from favorites", Toast.LENGTH_SHORT).show();
             loadFavorites();
         } else {
+            // Ensure the movie exists locally so favorites can load after relogin.
+            database.movieDao().insertMovie(movie);
             Favorite favorite = new Favorite(currentUserId, movie.getId());
             database.favoriteDao().insertFavorite(favorite);
             Toast.makeText(this, "Added to favorites!", Toast.LENGTH_SHORT).show();

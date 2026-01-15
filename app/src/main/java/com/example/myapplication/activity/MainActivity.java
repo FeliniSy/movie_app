@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -25,7 +27,9 @@ import com.example.myapplication.database.entity.Movie;
 import com.example.myapplication.util.SharedPreferencesHelper;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Setup toolbar
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar); // do not touch
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Movie App");
         }
@@ -90,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }, currentUserId);
 
-        moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         moviesRecyclerView.setAdapter(movieAdapter);
 
         searchButton.setOnClickListener(v -> {
@@ -127,84 +131,88 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadMoviesPage(int page) {
         RetrofitClient.getInstance().getApiService()
-                .getPopularMovies(TMDBApiService.API_KEY, page)
-                .enqueue(new Callback<MovieResponse>() {
-                    @Override
-                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            List<MovieResult> results = response.body().getResults();
-                            if (page == 1) {
-                                movies.clear();
-                            }
-                            for (MovieResult result : results) {
-                                Movie movie = convertToMovie(result);
-                                database.movieDao().insertMovie(movie);
-                                movies.add(movie);
-                            }
-                            movieAdapter.updateMovies(movies);
-
-                            // Load more pages if available (up to 5 pages = ~100 movies)
-                            if (page < 5 && response.body().getTotalPages() > page) {
-                                loadMoviesPage(page + 1);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MovieResponse> call, Throwable t) {
+            .getPopularMovies(TMDBApiService.API_KEY, page)
+            .enqueue(new Callback<MovieResponse>() {
+                @Override
+                public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<MovieResult> results = response.body().getResults();
                         if (page == 1) {
-                            Toast.makeText(MainActivity.this, "Failed to load movies", Toast.LENGTH_SHORT).show();
-                            loadMoviesFromDatabase();
+                            movies.clear();
+                        }
+                        for (MovieResult result : results) {
+                            Movie movie = convertToMovie(result);
+                            database.movieDao().insertMovie(movie);
+                            movies.add(movie);
+                        }
+                        movieAdapter.updateMovies(movies);
+                        refreshFavoriteIds();
+                        
+                        // Load more pages if available (up to 5 pages = ~100 movies)
+                        if (page < 5 && response.body().getTotalPages() > page) {
+                            loadMoviesPage(page + 1);
                         }
                     }
-                });
+                }
+
+                @Override
+                public void onFailure(Call<MovieResponse> call, Throwable t) {
+                    if (page == 1) {
+                        Toast.makeText(MainActivity.this, "Failed to load movies", Toast.LENGTH_SHORT).show();
+                        loadMoviesFromDatabase();
+                    }
+                }
+            });
     }
 
     private void searchMovies(String query) {
         isSearchMode = true;
         RetrofitClient.getInstance().getApiService()
-                .searchMovies(TMDBApiService.API_KEY, query, 1)
-                .enqueue(new Callback<MovieResponse>() {
-                    @Override
-                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            List<MovieResult> results = response.body().getResults();
-                            movies.clear();
-                            for (MovieResult result : results) {
-                                Movie movie = convertToMovie(result);
-                                database.movieDao().insertMovie(movie);
-                                movies.add(movie);
-                            }
-                            movieAdapter.updateMovies(movies);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<MovieResponse> call, Throwable t) {
-                        Toast.makeText(MainActivity.this, "Search failed", Toast.LENGTH_SHORT).show();
-                        List<Movie> dbMovies = database.movieDao().searchMovies(query);
+            .searchMovies(TMDBApiService.API_KEY, query, 1)
+            .enqueue(new Callback<MovieResponse>() {
+                @Override
+                public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<MovieResult> results = response.body().getResults();
                         movies.clear();
-                        movies.addAll(dbMovies);
+                        for (MovieResult result : results) {
+                            Movie movie = convertToMovie(result);
+                            database.movieDao().insertMovie(movie);
+                            movies.add(movie);
+                        }
                         movieAdapter.updateMovies(movies);
+                        refreshFavoriteIds();
                     }
-                });
+                }
+
+                @Override
+                public void onFailure(Call<MovieResponse> call, Throwable t) {
+                    Toast.makeText(MainActivity.this, "Search failed", Toast.LENGTH_SHORT).show();
+                    List<Movie> dbMovies = database.movieDao().searchMovies(query);
+                    movies.clear();
+                    movies.addAll(dbMovies);
+                    movieAdapter.updateMovies(movies);
+                    refreshFavoriteIds();
+                }
+            });
     }
 
     private void loadMoviesFromDatabase() {
         movies.clear();
         movies.addAll(database.movieDao().getAllMovies());
         movieAdapter.updateMovies(movies);
+        refreshFavoriteIds();
     }
 
     private Movie convertToMovie(MovieResult result) {
         return new Movie(
-                result.getId(),
-                result.getTitle(),
-                result.getOverview(),
-                result.getPosterPath(),
-                result.getVoteAverage(),
-                result.getReleaseDate(),
-                result.getBackdropPath()
+            result.getId(),
+            result.getTitle(),
+            result.getOverview(),
+            result.getPosterPath(),
+            result.getVoteAverage(),
+            result.getReleaseDate(),
+            result.getBackdropPath()
         );
     }
 
@@ -226,10 +234,21 @@ public class MainActivity extends AppCompatActivity {
             database.favoriteDao().deleteFavorite(existingFavorite);
             Toast.makeText(this, "Removed from favorites", Toast.LENGTH_SHORT).show();
         } else {
+            // Ensure the movie exists locally so favorites can load after relogin.
+            database.movieDao().insertMovie(movie);
             Favorite favorite = new Favorite(currentUserId, movie.getId());
             database.favoriteDao().insertFavorite(favorite);
             Toast.makeText(this, "Added to favorites!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void refreshFavoriteIds() {
+        List<Movie> favoriteMovies = database.favoriteDao().getFavoriteMovies(currentUserId);
+        Set<Integer> favoriteIds = new HashSet<>();
+        for (Movie favoriteMovie : favoriteMovies) {
+            favoriteIds.add(favoriteMovie.getId());
+        }
+        movieAdapter.updateFavoriteIds(favoriteIds);
     }
 
     @Override
